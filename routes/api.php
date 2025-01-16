@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\JWTController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Route;
 
@@ -29,10 +30,7 @@ Route::prefix('v1')->group(function () {
         });
 
     Route::middleware($authMiddleware)->group(function () {
-        Route::any('some-route', function (\Illuminate\Http\Request $request) {
-            $request->validated();
-            return JsonResource::make(['status' => 'It\'s working!']);
-        });
+        Route::apiResource('task', TaskController::class);
     });
 });
 

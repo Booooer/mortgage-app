@@ -10,9 +10,11 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
+    "dom-dev/b24-laravel-app": "^1.0",
     "dom-dev/l5-repository-fork": "^3.0.1",
     "guzzlehttp/guzzle": "^7.2",
     "laravel/framework": "^11.0",
+    "laravel/horizon": "^5.29",
     "laravel/sanctum": "^4.0",
     "laravel/tinker": "^2.9",
     "league/fractal": "^0.20.1",
@@ -43,6 +45,14 @@
     }
   },
   "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@git.digital.72dom.online:dom-dev/modules/b24-laravel-app.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@git.digital.72dom.online:dom-dev/modules/b24-php-sdk.git"
+    },
     {
       "type": "vcs",
       "url": "git@git.digital.72dom.online:dom-dev/modules/l5-repository-fork.git"
