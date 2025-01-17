@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\JWTController;
+use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware($authMiddleware)->group(function () {
         Route::apiResource('task', TaskController::class);
     });
+
+    Route::match(['get', 'post'], 'b24/install', [BitrixController::class, 'b24Install']);
 });
 
 Route::fallback(static function () {
