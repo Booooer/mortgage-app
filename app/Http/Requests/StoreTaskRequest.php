@@ -23,6 +23,9 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'borrower_name'           => 'required|string',
+            'borrower_surname'        => 'string',
+            'borrower_lat_name'       => 'string',
             'deal_id'                 => 'required|integer',
             'task_type'               => 'required|string',
             'wished_sum'              => 'required|integer',
@@ -30,7 +33,7 @@ class StoreTaskRequest extends FormRequest
             'borrower_type'           => 'required|string',
             'contact_uid'             => 'required|uuid',
             'employment_type'         => 'required|string',
-            'bank_salary'             => 'required|string',
+            'bank_uid'                => 'required|uuid',
             'marital_status'          => 'required|string',
             'have_children'           => 'required|boolean',
             'phone_uid'               => 'required|uuid',

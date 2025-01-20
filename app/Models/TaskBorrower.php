@@ -14,12 +14,17 @@ class TaskBorrower extends Model
     protected $fillable = [
         'type',
         'employment_type',
-        'bank_salary',
+        'bank_id',
         'marital_status',
         'have_children',
         'contact_id',
         'phone_id',
     ];
+
+    public function bank(): BelongsTo
+    {
+        return $this->belongsTo(Bank::class);
+    }
 
     public function b24Contact(): BelongsTo
     {

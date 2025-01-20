@@ -5,6 +5,7 @@ namespace App\Services\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\BorrowerDoc;
 use App\Repositories\B24ContactRepository;
+use App\Repositories\BankRepository;
 use App\Repositories\BorrowerDocRepository;
 use App\Repositories\InitPaymentSourceRepository;
 use App\Repositories\LiveComplexRepository;
@@ -13,10 +14,10 @@ use App\Repositories\PhoneRepository;
 use App\Repositories\TaskBorrowerRepository;
 use App\Repositories\TaskRepository;
 use App\Traits\findByUidTrait;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use phpDocumentor\Reflection\Exception;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 readonly class TaskService
@@ -31,7 +32,8 @@ readonly class TaskService
         private LiveComplexRepository       $liveComplexRepository,
         private MortgageTypeRepository      $mortgageTypeRepository,
         private InitPaymentSourceRepository $initPaymentSourceRepository,
-        private BorrowerDocRepository       $borrowerDocRepository
+        private BorrowerDocRepository       $borrowerDocRepository,
+        private BankRepository              $bankRepository
     ) {
     }
 
@@ -43,9 +45,9 @@ readonly class TaskService
         return $this->taskBorrowerRepository->create([
             'type'            => $data->get('borrower_type'),
             'employment_type' => $data->get('employment_type'),
-            'bank_salary'     => $data->get('bank_salary'),
+            'bank_id'         => $this->findByUid($data->get('bank_uid'), $this->bankRepository)['id'],
             'marital_status'  => $data->get('marital_status'),
-            'have_children'   => $data->get('have_children'),
+            'have_children'   => (bool) $data->get('have_children'),
             'contact_id'      => $this->findByUid($data->get('contact_uid'), $this->b24ContactRepository)['id'],
             'phone_id'        => $this->findByUid($data->get('phone_uid'), $this->phoneRepository)['id'],
         ]);
@@ -83,7 +85,7 @@ readonly class TaskService
             ]);
 
             if ($data->hasFile('docs')) {
-                $this->attachDocs(7, $data->allFiles());
+                $this->attachDocs($borrower->id, $data->allFiles());
             }
             DB::commit();
 
@@ -107,6 +109,8 @@ readonly class TaskService
                     'file'        => $randFileName,
                     'borrower_id' => $borrowerId,
                 ]);
+            } else {
+                throw new ValidatorException(['file' => 'Error while uploading file']);
             }
         }
     }
