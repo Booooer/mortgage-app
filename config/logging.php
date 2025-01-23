@@ -52,6 +52,11 @@ return [
     */
 
     'channels' => [
+        'b24' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/b24.log')
+        ],
+
         'stack' => [
             'driver'            => 'stack',
             'channels'          => ['single'],

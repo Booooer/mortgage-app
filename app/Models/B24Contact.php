@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasAppTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class B24Contact extends Model
 {
@@ -18,4 +19,14 @@ class B24Contact extends Model
         'surname',
         'last_name',
     ];
+
+    protected $hidden = [
+        'id',
+        'app_id',
+    ];
+
+    public function phones(): HasMany
+    {
+        return $this->hasMany(Phone::class, 'contact_id', 'id');
+    }
 }

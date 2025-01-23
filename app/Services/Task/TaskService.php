@@ -2,38 +2,33 @@
 
 namespace App\Services\Task;
 
+use App\Helpers\UidHelper;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\BorrowerDoc;
 use App\Repositories\B24ContactRepository;
 use App\Repositories\BankRepository;
 use App\Repositories\BorrowerDocRepository;
+use App\Repositories\EmploymentTypeRepository;
 use App\Repositories\InitPaymentSourceRepository;
 use App\Repositories\LiveComplexRepository;
+use App\Repositories\MaritalStatusRepository;
 use App\Repositories\MortgageTypeRepository;
 use App\Repositories\PhoneRepository;
 use App\Repositories\TaskBorrowerRepository;
 use App\Repositories\TaskRepository;
-use App\Traits\findByUidTrait;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Prettus\Validator\Exceptions\ValidatorException;
 
-readonly class TaskService
+readonly final class TaskService
 {
-    use findByUidTrait;
-
     public function __construct(
-        private TaskRepository              $taskRepository,
-        private TaskBorrowerRepository      $taskBorrowerRepository,
-        private B24ContactRepository        $b24ContactRepository,
-        private PhoneRepository             $phoneRepository,
-        private LiveComplexRepository       $liveComplexRepository,
-        private MortgageTypeRepository      $mortgageTypeRepository,
-        private InitPaymentSourceRepository $initPaymentSourceRepository,
-        private BorrowerDocRepository       $borrowerDocRepository,
-        private BankRepository              $bankRepository
+        private TaskRepository         $taskRepository,
+        private TaskBorrowerRepository $taskBorrowerRepository,
+        private BorrowerDocRepository  $borrowerDocRepository,
+        private UidHelper              $uidHelper,
     ) {
     }
 
@@ -43,13 +38,16 @@ readonly class TaskService
     public function createBorrower(StoreTaskRequest $data)
     {
         return $this->taskBorrowerRepository->create([
-            'type'            => $data->get('borrower_type'),
-            'employment_type' => $data->get('employment_type'),
-            'bank_id'         => $this->findByUid($data->get('bank_uid'), $this->bankRepository)['id'],
-            'marital_status'  => $data->get('marital_status'),
-            'have_children'   => (bool) $data->get('have_children'),
-            'contact_id'      => $this->findByUid($data->get('contact_uid'), $this->b24ContactRepository)['id'],
-            'phone_id'        => $this->findByUid($data->get('phone_uid'), $this->phoneRepository)['id'],
+            'type'               => $data->get('borrower_type'),
+            'employment_type_id' => $this->uidHelper->findIdByUid(
+                $data->get('employment_type_uid'), EmploymentTypeRepository::class),
+            'bank_id'            => $this->uidHelper->findIdByUid($data->get('bank_uid'), BankRepository::class),
+            'marital_status_id'  => $this->uidHelper->findIdByUid(
+                $data->get('marital_status_uid'), MaritalStatusRepository::class),
+            'have_children'      => (bool) $data->get('have_children'),
+            'contact_id'         => $this->uidHelper->findIdByUid(
+                $data->get('contact_uid'), B24ContactRepository::class),
+            'phone_id'           => $this->uidHelper->findIdByUid($data->get('phone_uid'), PhoneRepository::class),
         ]);
     }
 
@@ -73,13 +71,13 @@ readonly class TaskService
                     ? $data->get('maternity_capital')
                     : null,
                 'init_payment_source_id' => $data->filled('init_payment_source_uid')
-                    ? $this->findByUid($data->get('init_payment_source_uid'), $this->initPaymentSourceRepository)['id']
+                    ? $this->uidHelper->findIdByUid($data->get('init_payment_source_uid'), InitPaymentSourceRepository::class)
                     : null,
-                'mortgage_type_id'       => $this->findByUid(
-                    $data->get('mortgage_type_uid'), $this->mortgageTypeRepository)['id'],
-                'live_complex_id'        => $this->findByUid(
-                    $data->get('live_complex_uid'), $this->liveComplexRepository)['id'],
-                'borrower_id'            => $borrower['id'],
+                'mortgage_type_id'       => $this->uidHelper->findIdByUid(
+                    $data->get('mortgage_type_uid'), MortgageTypeRepository::class),
+                'live_complex_id'        => $this->uidHelper->findIdByUid(
+                    $data->get('live_complex_uid'), LiveComplexRepository::class),
+                'borrower_id'            => $borrower->id,
                 'author_id'              => auth()->user()->id,
                 'comment'                => $data->filled('comment') ? $data->get('comment') : null,
             ]);

@@ -3,18 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Services\B24\B24ContactService;
 use App\Services\B24\B24TaskService;
 use App\Services\Task\TaskService;
+use App\Transformers\TaskStoreOptionTransformer;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class TaskController extends Controller
 {
     public function __construct(
-        private readonly TaskService    $service,
-        private readonly B24TaskService $b24TaskService
+        private readonly TaskService       $service,
+        private readonly B24TaskService    $b24TaskService,
+        private readonly B24ContactService $b24ContactService
     ) {
+    }
+
+    public function index()
+    {
     }
 
     /**
@@ -22,15 +29,16 @@ class TaskController extends Controller
      *
      * @throws Exception
      */
-    public function store(StoreTaskRequest $request)
+    public function store(StoreTaskRequest $request): array
     {
         $task = $this->service->createTask($request);
 
         if ($task) {
             $this->b24TaskService->createTask($request);
+            $this->b24ContactService->updateContact($request);
         }
 
-        return response()->json($task);
+        return $this->transform($task, TaskStoreOptionTransformer::class);
     }
 
     /**

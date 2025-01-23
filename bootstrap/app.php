@@ -36,6 +36,10 @@ $application = Application::configure()
         channels: __DIR__ . '/../routes/channels.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->validateCsrfTokens(except: [
+            'test',
+        ]);
+
         $middleware->append([
             TrustProxies::class,
             HandleCors::class,

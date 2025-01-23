@@ -13,9 +13,9 @@ class TaskBorrower extends Model
 
     protected $fillable = [
         'type',
-        'employment_type',
+        'employment_type_id',
         'bank_id',
-        'marital_status',
+        'marital_status_id',
         'have_children',
         'contact_id',
         'phone_id',

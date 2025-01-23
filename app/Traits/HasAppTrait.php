@@ -13,7 +13,7 @@ trait HasAppTrait
     {
         static::addGlobalScope(new AppScope());
 
-        static::creating(function (HasAppInterface $model) {
+        static::creating(function ($model) {
             $appAttr = $model->getAppAttr();
             $model->$appAttr ??= auth()->user()->app_id;
         });
