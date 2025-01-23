@@ -1,6 +1,14 @@
 <?php
 
 use App\Http\Controllers\Auth\JWTController;
+use App\Http\Controllers\B24ContactController;
+use App\Http\Controllers\BankController;
+use App\Http\Controllers\BitrixController;
+use App\Http\Controllers\EmploymentTypeController;
+use App\Http\Controllers\InitPaymentSourceController;
+use App\Http\Controllers\LiveComplexController;
+use App\Http\Controllers\MaritalStatusController;
+use App\Http\Controllers\MortgageTypeController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Route;
@@ -30,8 +38,26 @@ Route::prefix('v1')->group(function () {
         });
 
     Route::middleware($authMiddleware)->group(function () {
-        Route::apiResource('task', TaskController::class);
+        Route::apiResource('task', TaskController::class)
+            ->only('store', 'update', 'index');
+        Route::apiResource('contact', B24ContactController::class)
+            ->only('index');
+        Route::apiResource('live-complex', LiveComplexController::class)
+            ->only('index');
+        Route::apiResource('mortgage-type', MortgageTypeController::class)
+            ->only('index');
+        Route::apiResource('bank', BankController::class)
+            ->only('index');
+        Route::apiResource('employment-type', EmploymentTypeController::class)
+            ->only('index');
+        Route::apiResource('init-payment-source', InitPaymentSourceController::class)
+            ->only('index');
+        Route::apiResource('marital-status', MaritalStatusController::class)
+            ->only('index');
     });
+
+    // установка приложения в crm битрикс24
+    Route::match(['get', 'post'], 'b24/install', [BitrixController::class, 'b24Install']);
 });
 
 Route::fallback(static function () {

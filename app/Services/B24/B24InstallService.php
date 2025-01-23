@@ -14,12 +14,12 @@ final readonly class B24InstallService
     ) {
     }
 
-    public function install(B24InstallData $installData): bool
+    public function install(B24InstallData $installData)
     {
         DB::beginTransaction();
 
         try {
-            $this->repository->firstOrCreate([
+            $result = $this->repository->firstOrCreate([
                 'auth_id'                 => $installData->authId,
                 'refresh_id'              => $installData->refreshId,
                 'member_id'               => $installData->memberId,
@@ -32,7 +32,7 @@ final readonly class B24InstallService
             ]);
             DB::commit();
 
-            return true;
+            return $result;
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::channel('b24')->error($e->getMessage());

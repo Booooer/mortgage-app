@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use DomDev\B24LaravelApp\Models\B24Install;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,11 +24,15 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'patronymic',
-        'ext_id',
+        'name',
+        'app_id',
+        'bitrix_id',
     ];
+
+    public function install(): BelongsTo
+    {
+        return $this->belongsTo(B24Install::class, 'app_id', 'id');
+    }
 
     public function getJWTIdentifier()
     {
